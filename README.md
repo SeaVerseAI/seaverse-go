@@ -1,6 +1,6 @@
 # SeaVerse SDK for Go
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/SeaVerseAI/seaverse-sdk-go.svg)](https://pkg.go.dev/github.com/SeaVerseAI/seaverse-sdk-go)
+[![Go Reference](https://pkg.go.dev/badge/github.com/SeaVerseAI/seaverse-go.svg)](https://pkg.go.dev/github.com/SeaVerseAI/seaverse-go)
 
 Go packages for SeaVerse AI Platform services.
 
@@ -10,7 +10,7 @@ Install individual packages as needed:
 
 ```bash
 # Install signature package
-go get github.com/SeaVerseAI/seaverse-sdk-go/signature@latest
+go get github.com/SeaVerseAI/seaverse-go/signature@latest
 ```
 
 ## Available Packages
@@ -20,7 +20,7 @@ go get github.com/SeaVerseAI/seaverse-sdk-go/signature@latest
 HMAC-SHA256 signature generation and verification.
 
 ```go
-import signature "github.com/SeaVerseAI/seaverse-sdk-go/signature/v1"
+import signature "github.com/SeaVerseAI/seaverse-go/signature/v1"
 
 signer := signature.NewSigner("your-secret-key")
 sig, err := signer.Sign(params)

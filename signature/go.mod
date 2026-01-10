@@ -1,3 +1,3 @@
-module github.com/SeaVerseAI/seaverse-sdk-go/signature
+module github.com/SeaVerseAI/seaverse-go/signature
 
 go 1.21

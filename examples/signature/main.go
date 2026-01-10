@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"time"
 
-	signature "github.com/SeaVerseAI/seaverse-sdk-go/signature/v1"
+	signature "github.com/SeaVerseAI/seaverse-go/signature/v1"
 )
 
 func main() {

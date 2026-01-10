@@ -18,13 +18,13 @@
 //
 // To install this package:
 //
-//	go get github.com/SeaVerseAI/seaverse-sdk-go/signature@latest
+//	go get github.com/SeaVerseAI/seaverse-go/signature@latest
 //
 // # Usage
 //
 // Basic usage for HMAC-SHA256 signing:
 //
-//	import signature "github.com/SeaVerseAI/seaverse-sdk-go/signature/v1"
+//	import signature "github.com/SeaVerseAI/seaverse-go/signature/v1"
 //
 //	// Create a signer with your secret key
 //	signer := signature.NewSigner("your-secret-key")
@@ -71,7 +71,7 @@
 //	    "fmt"
 //	    "log"
 //
-//	    signature "github.com/SeaVerseAI/seaverse-sdk-go/signature/v1"
+//	    signature "github.com/SeaVerseAI/seaverse-go/signature/v1"
 //	)
 //
 //	func main() {

@@ -1,13 +1,13 @@
 # Signature Package
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/SeaVerseAI/seaverse-sdk-go/signature.svg)](https://pkg.go.dev/github.com/SeaVerseAI/seaverse-sdk-go/signature)
+[![Go Reference](https://pkg.go.dev/badge/github.com/SeaVerseAI/seaverse-go/signature.svg)](https://pkg.go.dev/github.com/SeaVerseAI/seaverse-go/signature)
 
 Go package for HMAC-SHA256 signature generation and verification.
 
 ## Installation
 
 ```bash
-go get github.com/SeaVerseAI/seaverse-sdk-go/signature@latest
+go get github.com/SeaVerseAI/seaverse-go/signature@latest
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ import (
     "fmt"
     "log"
 
-    signature "github.com/SeaVerseAI/seaverse-sdk-go/signature/v1"
+    signature "github.com/SeaVerseAI/seaverse-go/signature/v1"
 )
 
 func main() {
