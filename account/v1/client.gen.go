@@ -89,10 +89,68 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// SdkPhoneLoginWithBody request with any body
+	SdkPhoneLoginWithBody(ctx context.Context, params *SdkPhoneLoginParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SdkPhoneLogin(ctx context.Context, params *SdkPhoneLoginParams, body SdkPhoneLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SdkPhoneSendCodeWithBody request with any body
+	SdkPhoneSendCodeWithBody(ctx context.Context, params *SdkPhoneSendCodeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SdkPhoneSendCode(ctx context.Context, params *SdkPhoneSendCodeParams, body SdkPhoneSendCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SdkMerchantVerifyTokenWithBody request with any body
 	SdkMerchantVerifyTokenWithBody(ctx context.Context, params *SdkMerchantVerifyTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	SdkMerchantVerifyToken(ctx context.Context, params *SdkMerchantVerifyTokenParams, body SdkMerchantVerifyTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) SdkPhoneLoginWithBody(ctx context.Context, params *SdkPhoneLoginParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSdkPhoneLoginRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SdkPhoneLogin(ctx context.Context, params *SdkPhoneLoginParams, body SdkPhoneLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSdkPhoneLoginRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SdkPhoneSendCodeWithBody(ctx context.Context, params *SdkPhoneSendCodeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSdkPhoneSendCodeRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SdkPhoneSendCode(ctx context.Context, params *SdkPhoneSendCodeParams, body SdkPhoneSendCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSdkPhoneSendCodeRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) SdkMerchantVerifyTokenWithBody(ctx context.Context, params *SdkMerchantVerifyTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -117,6 +175,112 @@ func (c *Client) SdkMerchantVerifyToken(ctx context.Context, params *SdkMerchant
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewSdkPhoneLoginRequest calls the generic SdkPhoneLogin builder with application/json body
+func NewSdkPhoneLoginRequest(server string, params *SdkPhoneLoginParams, body SdkPhoneLoginJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSdkPhoneLoginRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewSdkPhoneLoginRequestWithBody generates requests for SdkPhoneLogin with any type of body
+func NewSdkPhoneLoginRequestWithBody(server string, params *SdkPhoneLoginParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sdk/v1/auth/phone/login")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-App-ID", runtime.ParamLocationHeader, params.XAppID)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-App-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewSdkPhoneSendCodeRequest calls the generic SdkPhoneSendCode builder with application/json body
+func NewSdkPhoneSendCodeRequest(server string, params *SdkPhoneSendCodeParams, body SdkPhoneSendCodeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSdkPhoneSendCodeRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewSdkPhoneSendCodeRequestWithBody generates requests for SdkPhoneSendCode with any type of body
+func NewSdkPhoneSendCodeRequestWithBody(server string, params *SdkPhoneSendCodeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sdk/v1/auth/phone/send-code")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-App-ID", runtime.ParamLocationHeader, params.XAppID)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-App-ID", headerParam0)
+
+	}
+
+	return req, nil
 }
 
 // NewSdkMerchantVerifyTokenRequest calls the generic SdkMerchantVerifyToken builder with application/json body
@@ -233,10 +397,77 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// SdkPhoneLoginWithBodyWithResponse request with any body
+	SdkPhoneLoginWithBodyWithResponse(ctx context.Context, params *SdkPhoneLoginParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SdkPhoneLoginResponse, error)
+
+	SdkPhoneLoginWithResponse(ctx context.Context, params *SdkPhoneLoginParams, body SdkPhoneLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*SdkPhoneLoginResponse, error)
+
+	// SdkPhoneSendCodeWithBodyWithResponse request with any body
+	SdkPhoneSendCodeWithBodyWithResponse(ctx context.Context, params *SdkPhoneSendCodeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SdkPhoneSendCodeResponse, error)
+
+	SdkPhoneSendCodeWithResponse(ctx context.Context, params *SdkPhoneSendCodeParams, body SdkPhoneSendCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*SdkPhoneSendCodeResponse, error)
+
 	// SdkMerchantVerifyTokenWithBodyWithResponse request with any body
 	SdkMerchantVerifyTokenWithBodyWithResponse(ctx context.Context, params *SdkMerchantVerifyTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SdkMerchantVerifyTokenResponse, error)
 
 	SdkMerchantVerifyTokenWithResponse(ctx context.Context, params *SdkMerchantVerifyTokenParams, body SdkMerchantVerifyTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*SdkMerchantVerifyTokenResponse, error)
+}
+
+type SdkPhoneLoginResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		union json.RawMessage
+	}
+	JSON400 *BadRequest
+	JSON401 *Unauthorized
+	JSON500 *InternalServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r SdkPhoneLoginResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SdkPhoneLoginResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SdkPhoneSendCodeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		// ExpiresIn Code validity in seconds
+		ExpiresIn *int    `json:"expires_in,omitempty"`
+		Message   *string `json:"message,omitempty"`
+		Success   *bool   `json:"success,omitempty"`
+	}
+	JSON400 *BadRequest
+	JSON429 *ErrorResponse
+	JSON500 *InternalServerError
+}
+
+// Status returns HTTPResponse.Status
+func (r SdkPhoneSendCodeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SdkPhoneSendCodeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type SdkMerchantVerifyTokenResponse struct {
@@ -264,6 +495,40 @@ func (r SdkMerchantVerifyTokenResponse) StatusCode() int {
 	return 0
 }
 
+// SdkPhoneLoginWithBodyWithResponse request with arbitrary body returning *SdkPhoneLoginResponse
+func (c *ClientWithResponses) SdkPhoneLoginWithBodyWithResponse(ctx context.Context, params *SdkPhoneLoginParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SdkPhoneLoginResponse, error) {
+	rsp, err := c.SdkPhoneLoginWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSdkPhoneLoginResponse(rsp)
+}
+
+func (c *ClientWithResponses) SdkPhoneLoginWithResponse(ctx context.Context, params *SdkPhoneLoginParams, body SdkPhoneLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*SdkPhoneLoginResponse, error) {
+	rsp, err := c.SdkPhoneLogin(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSdkPhoneLoginResponse(rsp)
+}
+
+// SdkPhoneSendCodeWithBodyWithResponse request with arbitrary body returning *SdkPhoneSendCodeResponse
+func (c *ClientWithResponses) SdkPhoneSendCodeWithBodyWithResponse(ctx context.Context, params *SdkPhoneSendCodeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SdkPhoneSendCodeResponse, error) {
+	rsp, err := c.SdkPhoneSendCodeWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSdkPhoneSendCodeResponse(rsp)
+}
+
+func (c *ClientWithResponses) SdkPhoneSendCodeWithResponse(ctx context.Context, params *SdkPhoneSendCodeParams, body SdkPhoneSendCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*SdkPhoneSendCodeResponse, error) {
+	rsp, err := c.SdkPhoneSendCode(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSdkPhoneSendCodeResponse(rsp)
+}
+
 // SdkMerchantVerifyTokenWithBodyWithResponse request with arbitrary body returning *SdkMerchantVerifyTokenResponse
 func (c *ClientWithResponses) SdkMerchantVerifyTokenWithBodyWithResponse(ctx context.Context, params *SdkMerchantVerifyTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SdkMerchantVerifyTokenResponse, error) {
 	rsp, err := c.SdkMerchantVerifyTokenWithBody(ctx, params, contentType, body, reqEditors...)
@@ -279,6 +544,107 @@ func (c *ClientWithResponses) SdkMerchantVerifyTokenWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseSdkMerchantVerifyTokenResponse(rsp)
+}
+
+// ParseSdkPhoneLoginResponse parses an HTTP response from a SdkPhoneLoginWithResponse call
+func ParseSdkPhoneLoginResponse(rsp *http.Response) (*SdkPhoneLoginResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SdkPhoneLoginResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			union json.RawMessage
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSdkPhoneSendCodeResponse parses an HTTP response from a SdkPhoneSendCodeWithResponse call
+func ParseSdkPhoneSendCodeResponse(rsp *http.Response) (*SdkPhoneSendCodeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SdkPhoneSendCodeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			// ExpiresIn Code validity in seconds
+			ExpiresIn *int    `json:"expires_in,omitempty"`
+			Message   *string `json:"message,omitempty"`
+			Success   *bool   `json:"success,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseSdkMerchantVerifyTokenResponse parses an HTTP response from a SdkMerchantVerifyTokenWithResponse call

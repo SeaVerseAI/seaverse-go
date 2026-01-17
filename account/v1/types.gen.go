@@ -4,8 +4,49 @@
 package v1
 
 import (
+	"time"
+
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// Defines values for AuthUserDataStatus.
+const (
+	Active    AuthUserDataStatus = "active"
+	Inactive  AuthUserDataStatus = "inactive"
+	Suspended AuthUserDataStatus = "suspended"
+	Temp      AuthUserDataStatus = "temp"
+)
+
+// AuthSuccessResponse defines model for AuthSuccessResponse.
+type AuthSuccessResponse struct {
+	Data *struct {
+		// RefreshToken JWT refresh token
+		RefreshToken *string `json:"refreshToken,omitempty"`
+
+		// Token JWT access token
+		Token *string       `json:"token,omitempty"`
+		User  *AuthUserData `json:"user,omitempty"`
+	} `json:"data,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Success *bool   `json:"success,omitempty"`
+}
+
+// AuthUserData defines model for AuthUserData.
+type AuthUserData struct {
+	CreatedAt     *time.Time           `json:"created_at,omitempty"`
+	Email         *openapi_types.Email `json:"email,omitempty"`
+	EmailVerified *bool                `json:"email_verified,omitempty"`
+
+	// OauthProviders Map of OAuth provider to user ID
+	OauthProviders *map[string]string  `json:"oauth_providers,omitempty"`
+	Status         *AuthUserDataStatus `json:"status,omitempty"`
+	UpdatedAt      *time.Time          `json:"updated_at,omitempty"`
+	UserId         *string             `json:"user_id,omitempty"`
+	Username       *string             `json:"username,omitempty"`
+}
+
+// AuthUserDataStatus defines model for AuthUserData.Status.
+type AuthUserDataStatus string
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
@@ -47,11 +88,71 @@ type MerchantVerifyTokenResponse struct {
 	Success *bool `json:"success,omitempty"`
 }
 
+// PhoneLoginRequest defines model for PhoneLoginRequest.
+type PhoneLoginRequest struct {
+	// Code 6-digit SMS verification code
+	Code string `json:"code"`
+
+	// InvitationCode Invitation code (required if invite system is enabled)
+	InvitationCode *string `json:"invitation_code,omitempty"`
+
+	// MerchantId Merchant ID (optional, defaults to "seaverse")
+	MerchantId *string `json:"merchant_id,omitempty"`
+
+	// Phone Phone number in E.164 format
+	Phone string `json:"phone"`
+
+	// Username Username for first-time registration (optional)
+	Username *string `json:"username,omitempty"`
+}
+
+// PhoneSendCodeRequest defines model for PhoneSendCodeRequest.
+type PhoneSendCodeRequest struct {
+	// MerchantId Merchant ID (optional, defaults to "seaverse")
+	MerchantId *string `json:"merchant_id,omitempty"`
+
+	// Phone Phone number in E.164 format (e.g., +8613800138000)
+	Phone string `json:"phone"`
+}
+
+// TempUserResponse Response when user registration requires invitation code
+type TempUserResponse struct {
+	// Email User email (for email registration)
+	Email   *string `json:"email,omitempty"`
+	Message *string `json:"message,omitempty"`
+
+	// Phone User phone (for phone registration)
+	Phone *string `json:"phone,omitempty"`
+
+	// Provider Registration provider (email, phone, google, github, discord)
+	Provider               *string `json:"provider,omitempty"`
+	RequiresInvitationCode *bool   `json:"requiresInvitationCode,omitempty"`
+	Success                *bool   `json:"success,omitempty"`
+
+	// TempUserId Temporary user ID
+	TempUserId *string `json:"tempUserId,omitempty"`
+}
+
 // BadRequest defines model for BadRequest.
 type BadRequest = ErrorResponse
 
 // InternalServerError defines model for InternalServerError.
 type InternalServerError = ErrorResponse
+
+// Unauthorized defines model for Unauthorized.
+type Unauthorized = ErrorResponse
+
+// SdkPhoneLoginParams defines parameters for SdkPhoneLogin.
+type SdkPhoneLoginParams struct {
+	// XAppID Application ID for multi-tenant routing
+	XAppID string `json:"X-App-ID"`
+}
+
+// SdkPhoneSendCodeParams defines parameters for SdkPhoneSendCode.
+type SdkPhoneSendCodeParams struct {
+	// XAppID Application ID for multi-tenant routing
+	XAppID string `json:"X-App-ID"`
+}
 
 // SdkMerchantVerifyTokenParams defines parameters for SdkMerchantVerifyToken.
 type SdkMerchantVerifyTokenParams struct {
@@ -64,6 +165,12 @@ type SdkMerchantVerifyTokenParams struct {
 	// XSignature Request signature generated using app_secret
 	XSignature string `json:"X-Signature"`
 }
+
+// SdkPhoneLoginJSONRequestBody defines body for SdkPhoneLogin for application/json ContentType.
+type SdkPhoneLoginJSONRequestBody = PhoneLoginRequest
+
+// SdkPhoneSendCodeJSONRequestBody defines body for SdkPhoneSendCode for application/json ContentType.
+type SdkPhoneSendCodeJSONRequestBody = PhoneSendCodeRequest
 
 // SdkMerchantVerifyTokenJSONRequestBody defines body for SdkMerchantVerifyToken for application/json ContentType.
 type SdkMerchantVerifyTokenJSONRequestBody = MerchantVerifyTokenRequest
